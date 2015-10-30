@@ -4,13 +4,15 @@ LD=mipsel-unknown-elf-ld
 OBJCOPY=mipsel-unknown-elf-objcopy
 CFLAGS=-Os
 
-OBJS=start.o main.o
+STAGE1_OBJS=start.o
 
-hello.bin: hello.elf
+bootloader.bin: bootloader.elf
+
+bootloader.elf: $(STAGE1_OBJS)
+	$(LD) -T bootloader.lds -o $@ $+
+
+%.bin: %.elf
 	$(OBJCOPY) -O binary $< $@
-
-hello.elf: $(OBJS)
-	$(LD) -T linker.lds -o $@ $+
 
 %.o: %.[Sc]
 	$(CC) $(CFLAGS) -c -o $@ $<
