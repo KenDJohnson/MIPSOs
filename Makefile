@@ -14,7 +14,7 @@ bootloader.elf: $(STAGE1_OBJS)
 %.bin: %.elf
 	$(OBJCOPY) -O binary $< $@
 
-%.o: %.[Sc]
+%.o: %.S
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 clean: 

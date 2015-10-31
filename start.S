@@ -7,7 +7,7 @@
 /* JZ4780 USB Bootloader: Simple Hello World over UART */
 
 .data
-hello: 		.asciiz "hello world!"
+uart_enabled: 		.asciiz "UART4 Enabled"
 .text
 .globl _start
 .ent _start
@@ -17,8 +17,8 @@ _start:
 	move 	t1, sp
 	li 		sp, 0xf4004000  // init new stack
 	jal 	entrypoint     
-	la 		a0, hello
-	jal 	debug_uart_puts
+	la 		a0, uart_enabled
+	jal 	debug_uart_puts_line
 	move 	sp, t1
 	move 	ra, t0
 	
@@ -129,6 +129,35 @@ endputsloop:
 	addi 	sp, sp, 12
 	jr 		ra
 .end debug_uart_puts
+
+
+
+.globl debug_uart_puts_line
+.ent debug_uart_puts_line
+debug_uart_puts_line:
+	addi 	sp, sp, -12
+	sw 		ra, 0(sp)
+	sw 		s0, 4(sp)
+	sw 		s1, 8(sp)
+	move 	s1, a0
+putslnloop:
+	lb 		s2, 0(s1)
+	beq 	s2, zero, endputslnloop
+	move 	a0, s2
+	jal 	debug_uart_putc
+	addi 	s1, s1, 1
+	j 		putslnloop
+endputslnloop: 
+	li 		a0, 0xd
+	jal 	debug_uart_putc
+	li 		a0, 0xa
+	jal 	debug_uart_putc
+	lw 		s1, 8(sp)
+	lw 		s0, 4(sp)
+	lw 		ra, 0(sp)
+	addi 	sp, sp, 12
+	jr 		ra
+.end debug_uart_puts_line
 
 .globl debug_uart_putc
 .ent debug_uart_putc
