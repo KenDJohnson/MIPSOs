@@ -18,4 +18,4 @@ bootloader.elf: $(STAGE1_OBJS)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 clean: 
-	rm -f *.0 *.elf *.bin
+	rm -f *.o *.elf *.bin
